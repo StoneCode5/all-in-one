@@ -20,7 +20,7 @@ class Store<T> {
         if (initialState) {
             this.state = initialState
         } else {
-            // this.state = reducer('', {type; '1'})
+            this.state = reducer('' as T, {type: '1'})
         }
     }
 
@@ -69,11 +69,13 @@ const Redux = {
         return new Store(reducer, initialState)
     },
     combineReducers(reducersWithKeys:ReducersWithKeys) {
-        const _state:Record<string, unknown> = {}
-        Object.entries(reducersWithKeys).forEach(([key, reducer]) => {
-            // TODO 这里用空字符串可能有问题， 开发者也可能会使用‘’？
-            _state[key] = reducer('', {type: ''})
-        })
+        // const _state:Record<string, unknown> = {}
+        return function (state:Record<string, unknown>, action:Action) {
+            Object.entries(reducersWithKeys).forEach(([key, reducer]) => {
+                state[key] = reducer(state[key], action)
+            })
+            return state
+        } 
     },
 
     applyMiddleware() {
