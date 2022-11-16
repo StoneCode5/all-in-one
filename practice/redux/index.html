@@ -1,132 +1,161 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Redux basic example</title>
+    <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script>
+    <!-- <script src="./index.ts"></script> -->
+  </head>
 
-<head>
-  <title>Redux basic example</title>
-  <!-- <script src="https://unpkg.com/redux@latest/dist/redux.min.js"></script> -->
-  <script src="./index.ts"></script>
-</head>
-
-<body>
-  <div>
-    <p>
-      Clicked: <span id="value">0</span> times
-      <button id="increment">+</button>
-      <button id="decrement">-</button>
-      <button id="incrementIfOdd">Increment if odd</button>
-      <button id="incrementAsync">Increment async</button>
-    </p>
-    <p>
-      calculate : <span id="value2">0</span> times
-      <button id="sum">sum</button>
-      <button id="reduce">reduce</button>
-
-    </p>
-  </div>
-  <script>
-    function counter(state, action) {
-      if (typeof state === 'undefined') {
-        return 0
-      }
-      console.log('state', state);
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 1
-        case 'DECREMENT':
-          return state - 1
-        default:
-          return state
-      }
-    }
-
-    function calculate(state = 0, action) {
-      switch (action.type) {
-        case 'SUM':
-          return action.payload[0] + action.payload[1]
-          break;
-        case 'REDUCE':
-          state = action.payload[0] - action.payload[1]
-          return state
-          break;
-        default:
-          return state
-          break;
-      }
-    }
-
-    function counter2(state, action) {
-      if (typeof state === 'undefined') {
-        return 0
-      }
-
-      switch (action.type) {
-        case 'INCREMENT':
-          return state + 1
-        case 'DECREMENT':
-          return state - 1
-        default:
-          return state
-      }
-    }
-
-    const reducers = Redux.combineReducers({
-      counter,
-      calculate
-    })
-
-    var store = Redux.createStore(reducers, { counter: 0, calculate: 0 })
-    var valueEl = document.getElementById('value')
-    var valueEl2 = document.getElementById('value2')
-
-    console.log(store.getState())
-
-    function render() {
-      console.log('render')
-      valueEl.innerHTML = store.getState().counter
-    }
-    function render2() {
-      console.log('render2')
-
-      valueEl2.innerHTML = store.getState().calculate
-    }
-
-    render()
-    store.subscribe(render2)
-    store.subscribe(render)
-
-
-    document.getElementById('increment')
-      .addEventListener('click', function () {
-        store.dispatch({ type: 'INCREMENT' })
-      })
-
-    document.getElementById('decrement')
-      .addEventListener('click', function () {
-        store.dispatch({ type: 'DECREMENT' })
-      })
-
-    document.getElementById('incrementIfOdd')
-      .addEventListener('click', function () {
-        if (store.getState() % 2 !== 0) {
-          store.dispatch({ type: 'INCREMENT' })
+  <body>
+    <div>
+      <p>
+        Clicked: <span id="value">0</span> times
+        <button id="increment">+</button>
+        <button id="decrement">-</button>
+        <button id="incrementIfOdd">Increment if odd</button>
+        <button id="incrementAsync">Increment async</button>
+      </p>
+      <p>
+        calculate : <span id="value2">0</span> times
+        <button id="sum">sum</button>
+        <button id="reduce">reduce</button>
+      </p>
+    </div>
+    <script>
+      function counter(state, action) {
+        if (typeof state === "undefined") {
+          return 0;
         }
-      })
+        console.log("state", state);
+        switch (action.type) {
+          case "INCREMENT":
+            return state + 1;
+          case "DECREMENT":
+            return state - 1;
+          default:
+            return state;
+        }
+      }
 
-    document.getElementById('incrementAsync')
-      .addEventListener('click', function () {
-        setTimeout(function () {
-          store.dispatch({ type: 'INCREMENT' })
-        }, 1000)
-      })
-    document.getElementById('sum')
-      .addEventListener('click', function () {
-        store.dispatch({ type: 'SUM', payload: [3, 6] })
-      })
-    document.getElementById('reduce')
-      .addEventListener('click', function () {
-        store.dispatch({ type: 'REDUCE', payload: [3, 6] })
-      })
-  </script>
-</body>
+      function calculate(state = 0, action) {
+        switch (action.type) {
+          case "SUM":
+            return action.payload[0] + action.payload[1];
+            break;
+          case "REDUCE":
+            state = action.payload[0] - action.payload[1];
+            return state;
+            break;
+          default:
+            return state;
+            break;
+        }
+      }
 
+      function counter2(state, action) {
+        if (typeof state === "undefined") {
+          return 0;
+        }
+
+        switch (action.type) {
+          case "INCREMENT":
+            return state + 1;
+          case "DECREMENT":
+            return state - 1;
+          default:
+            return state;
+        }
+      }
+
+      const reducers = Redux.combineReducers({
+        counter,
+        calculate,
+      });
+
+      var store = Redux.createStore(reducers, { counter: 0, calculate: 0 }, Redux.applyMiddleware(logger, logger2));
+      var valueEl = document.getElementById("value");
+      var valueEl2 = document.getElementById("value2");
+
+      console.log(store.getState());
+
+      function render() {
+        console.log("render");
+        valueEl.innerHTML = store.getState().counter;
+      }
+      function render2() {
+        console.log("render2");
+
+        valueEl2.innerHTML = store.getState().calculate;
+      }
+
+      render();
+      store.subscribe(render2);
+      store.subscribe(render);
+
+      function logger({ getState }) {
+        return (next) => (action) => {
+          console.log("will dispatch", action);
+          console.log("state before dispatch", getState());
+          // 调用 middleware 链中下一个 middleware 的 dispatch。
+          let returnValue = next(action);
+
+          console.log("state after dispatch", getState());
+
+          // 一般会是 action 本身，除非
+          // 后面的 middleware 修改了它。
+          return returnValue;
+        };
+      }
+
+      function logger2({ getState }) {
+        return (next) => (action) => {
+          console.log("will dispatch2", action);
+
+          console.log("state before dispatch2", getState());
+          // 调用 middleware 链中下一个 middleware 的 dispatch。
+          let returnValue = next(action);
+
+          console.log("state after dispatch2", getState());
+
+          // 一般会是 action 本身，除非
+          // 后面的 middleware 修改了它。
+          return returnValue;
+        };
+      }
+
+      document
+        .getElementById("increment")
+        .addEventListener("click", function () {
+          store.dispatch({ type: "INCREMENT" });
+        });
+
+      document
+        .getElementById("decrement")
+        .addEventListener("click", function () {
+          store.dispatch({ type: "DECREMENT" });
+        });
+
+      document
+        .getElementById("incrementIfOdd")
+        .addEventListener("click", function () {
+          if (store.getState() % 2 !== 0) {
+            store.dispatch({ type: "INCREMENT" });
+          }
+        });
+
+      document
+        .getElementById("incrementAsync")
+        .addEventListener("click", function () {
+          setTimeout(function () {
+            store.dispatch({ type: "INCREMENT" });
+          }, 1000);
+        });
+      document.getElementById("sum").addEventListener("click", function () {
+        store.dispatch({ type: "SUM", payload: [3, 6] });
+      });
+      document.getElementById("reduce").addEventListener("click", function () {
+        store.dispatch({ type: "REDUCE", payload: [3, 6] });
+      });
+    </script>
+  </body>
 </html>

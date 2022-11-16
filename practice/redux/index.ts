@@ -65,16 +65,17 @@ class Store<T> {
 }
 
 const Redux = {
-    createStore<T>(reducer: any, initialState: T) {
+    createStore<T>(reducer: any, initialState?: T) {
         return new Store(reducer, initialState)
     },
     combineReducers(reducersWithKeys:ReducersWithKeys) {
         // const _state:Record<string, unknown> = {}
         return function (state:Record<string, unknown>, action:Action) {
+            let _state:Record<string, any> = {}
             Object.entries(reducersWithKeys).forEach(([key, reducer]) => {
-                state[key] = reducer(state[key], action)
+                _state[key] = reducer(state[key], action)
             })
-            return state
+            return _state
         } 
     },
 
@@ -98,7 +99,31 @@ function counter(state: any, action: any) {
     }
 }
 
-const store = Redux.createStore(counter, 1)
+function calculate(state:any = 0, action:any) {
+    switch (action.type) {
+      case 'SUM':
+        return action.payload[0] + action.payload[1]
+        break;
+      case 'REDUCE':
+        state = action.payload[0] - action.payload[1]
+        return state
+        break;
+      default:
+        return state
+        break;
+    }
+  }
+
+
+  const reducers = Redux.combineReducers({
+    counter,
+    calculate
+  })
+const store = Redux.createStore(reducers)
+
+
+console.log(store.getState())
+
 
 const unSub1 = store.subscribe(() => {
     console.log('sub1');
@@ -125,5 +150,7 @@ store.dispatch({
     type: 'INCREMENT',
 })
 
+store.dispatch({ type: 'SUM', payload: [3, 6] })
+console.log(store.getState())
 
 
