@@ -19,9 +19,7 @@ class Store {
     }
     dispatch(action) {
         if (this.dispatchWithMiddlewear) {
-            let dis = this.dispatchWithMiddlewear(this.state, this._dispatch);
-            debugger;
-            dis.call(this, action);
+            this.dispatchWithMiddlewear({ getState: this.getState.bind(this), dispatch: this.dispatch.bind(this) }, this._dispatch.bind(this))(action);
         }
         else {
             this._dispatch(action);
@@ -73,11 +71,13 @@ const Redux = {
             return _state;
         };
     },
-    applyMiddleware(middlewaer1) {
-        return (store, dispatch, action) => {
-            console.log('apply this', this);
-            dispatch = middlewaer1(store)(dispatch);
-            // dispatch(store)(dispatch)(action)
+    applyMiddleware(...args) {
+        const middlewears = arguments;
+        return (store, dispatch) => {
+            for (let i = middlewears.length - 1; i >= 0; i--) {
+                const middlewear = middlewears[i];
+                dispatch = middlewear(store)(dispatch);
+            }
             return dispatch;
         };
     }
@@ -114,14 +114,23 @@ const reducers = Redux.combineReducers({
     counter,
     calculate
 });
-function loggiong(store) {
+function loggiong1(store) {
     return function (next) {
         return function (action) {
-            console.log('dispatch1 before');
-            console.log('next', next);
-            console.log('this', this);
-            const result = next.call(this, action);
-            console.log('dispatch2 after');
+            console.log('store', store);
+            console.log('dispatch1 before', store.getState());
+            const result = next(action);
+            console.log('dispatch1 after', store.getState());
+            return result;
+        };
+    };
+}
+function loggiong2(store) {
+    return function (next) {
+        return function (action) {
+            console.log('dispatch2 before', store.getState());
+            const result = next(action);
+            console.log('dispatch2 after', store.getState());
             return result;
         };
     };
@@ -137,7 +146,7 @@ function loggiong(store) {
 const store = Redux.createStore(reducers, {
     counter: 0,
     calculate: 0,
-}, Redux.applyMiddleware(loggiong));
+}, Redux.applyMiddleware(loggiong1, loggiong2));
 console.log(store.getState());
 const unSub1 = store.subscribe(() => {
     console.log('sub1');
