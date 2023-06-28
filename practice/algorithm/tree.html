@@ -43,6 +43,7 @@
             }
         ]
 
+        // 深度优先 递归实现  时间复杂度
         function tans(parentId, arr) {
             const childs = arr.filter((item) => item.pid === parentId)
             let ret = []
@@ -62,6 +63,7 @@
             return ret
         }
 
+        // 用Map存储,利用对象的引用特性 时间复杂度 O(n)
         function arrayToTree(items) {
             const result = [];   // 存放结果集
             const itemMap = {};  // 
@@ -70,7 +72,7 @@
             for (const item of items) {
                 itemMap[item.id] = { ...item, children: [] }
             }
-            debugger
+
             for (const item of items) {
                 const id = item.id;
                 const pid = item.pid;
