@@ -65,7 +65,7 @@ class Store<T> {
 }
 
 const Redux = {
-    createStore<T>(reducer: any, initialState?: T) {
+    createStore<T>(reducer: any, initialState?: T, ) {
         return new Store(reducer, initialState)
     },
     combineReducers(reducersWithKeys:ReducersWithKeys) {
@@ -79,7 +79,7 @@ const Redux = {
         } 
     },
 
-    applyMiddleware() {
+    applyMiddleware(middleware) {
 
     }
 }
@@ -154,3 +154,12 @@ store.dispatch({ type: 'SUM', payload: [3, 6] })
 console.log(store.getState())
 
 
+function func() {
+    let a = 1
+    return function () {
+        console.log('a', a)
+    }
+}
+
+const func2 = func()
+func2()
