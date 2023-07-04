@@ -84,6 +84,27 @@ function isHappy(n: number): boolean {
     return false
 };
 
+function isHappy1(n: number): boolean {
+    let m = new Map()
+
+    const getSum = (num) => {
+        let sum = 0
+        while (n) {
+            sum += (n % 10) ** 2
+            n = Math.floor(n / 10)
+        }
+        return sum
+    }
+
+    while (true) {
+        // n出现过，证明已陷入无限循环
+        if (m.has(n)) return false
+        if (n === 1) return true
+        m.set(n, 1)
+        n = getSum(n)
+    }
+};
+
 /**
  * 自己看到题目的第一想法
  *     采用数字与字符串互转的方式来计算求和
@@ -95,3 +116,26 @@ function isHappy(n: number): boolean {
  * 今日收获，记录一下自己的学习时长
  *     0.5小时
  **/
+
+
+/**
+ * 1. 两数之和
+ */
+
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function(nums, target) {
+    const map = new Map(nums)
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i];
+        const needNum = target - num
+        const index = map.get(needNum)
+        if (index) {
+            return map.get(needNum)
+        } 
+        return 
+    }
+};
