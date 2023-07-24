@@ -7,13 +7,13 @@
  * @return {number}
  */
 var search = function (nums, target) {
-    var start = 0;
-    var end = nums.length - 1;
-    var loop = true;
-    var ret = -1;
-    var i = 0;
+    let start = 0;
+    let end = nums.length - 1;
+    let loop = true;
+    let ret = -1;
+    let i = 0;
     while (loop) {
-        var split = Math.floor((end - start) / 2) + start;
+        const split = Math.floor((end - start) / 2) + start;
         console.log("split", split);
         if (nums[start] === target) {
             ret = start;
@@ -44,11 +44,11 @@ var search = function (nums, target) {
     return ret;
 };
 var search2 = function (nums, target) {
-    var start = 0;
-    var end = nums.length - 1;
-    var ret = -1;
+    let start = 0;
+    let end = nums.length - 1;
+    let ret = -1;
     while (start <= end) {
-        var milddle = Math.floor((end - start) / 2) + start;
+        const milddle = Math.floor((end - start) / 2) + start;
         console.log('milddle', milddle);
         if (nums[milddle] > target) {
             end = milddle - 1;
@@ -62,9 +62,9 @@ var search2 = function (nums, target) {
     }
     return ret;
 };
-var nums = [-1, 0, 3, 5, 9, 12];
-var target = -3;
-var index = search2(nums, target);
+const nums = [-1, 0, 3, 5, 9, 12];
+const target = -3;
+const index = search2(nums, target);
 console.log("index", index);
 /**
  * 自己看到题目的第一想法
@@ -86,9 +86,9 @@ console.log("index", index);
 * @return {number}
 */
 var removeElement = function (nums, val) {
-    var ret = nums.length;
-    for (var i = 0; i < nums.length; i++) {
-        var num = nums[i];
+    let ret = nums.length;
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i];
         if (num === val) {
             nums.splice(i, 0);
             i -= 1;
@@ -98,20 +98,20 @@ var removeElement = function (nums, val) {
     return ret;
 };
 var removeElement1 = function (nums, val) {
-    var length = nums.length;
-    for (var i = 0; i < nums.length; i++) {
-        var num = nums[i];
+    let length = nums.length;
+    for (let i = 0; i < nums.length; i++) {
+        const num = nums[i];
         if (num === val) {
-            for (var j = i; j < length - 1; j++) {
+            for (let j = i; j < length - 1; j++) {
                 nums[j] = nums[j + 1];
             }
             length -= 1;
         }
     }
 };
-var removeElement2 = function (nums, target) {
-    var slowIndex = 0;
-    for (var fastIndex = 0; fastIndex < nums.length; fastIndex++) {
+const removeElement2 = (nums, target) => {
+    let slowIndex = 0;
+    for (let fastIndex = 0; fastIndex < nums.length; fastIndex++) {
         if (nums[fastIndex] !== target) {
             nums[slowIndex] = nums[fastIndex];
             slowIndex += 1;
